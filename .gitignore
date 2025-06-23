@@ -24,3 +24,11 @@ staticfiles/
 # OS files
 .DS_Store
 Thumbs.db
+
+# Ignore MySQL dump files or database backup
+*.sql
+*.sql.gz
+
+# If you use a .env file or local settings file
+.env
+local_settings.py

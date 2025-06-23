@@ -641,21 +641,13 @@
 
     // Update price and km
     function updatePricesAndKms(data) {
-      document.querySelectorAll('.price-150km').forEach(el => {
-        el.textContent = '₹' + data.prices['150km'];
-      });
-      document.querySelectorAll('.price-unlimited').forEach(el => {
-        el.textContent = '₹' + data.prices['unlimited'];
-      });
-
-      document.querySelectorAll('.included-km-150km').forEach(el => {
-        el.textContent = data.included_kms['150km'] + ' KMs';
-      });
-
-      document.querySelectorAll('.included-km-unlimited').forEach(el => {
-        el.textContent = data.included_kms['unlimited'];
-      });
+  document.querySelectorAll('.included-km-150km').forEach(el => {
+    const carId = el.getAttribute('data-car-id');
+    if (data.included_kms[carId] && data.included_kms[carId]['150km']) {
+      el.textContent = data.included_kms[carId]['150km'] + ' KMs';
     }
+  });
+}
 
     // Fetch dynamic prices
     function fetchAndUpdateDynamicPrices() {

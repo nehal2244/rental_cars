@@ -60,8 +60,8 @@ def browse_cars(request):
                     car.dynamic_price_150km = float(car.calculate_price(rental_hours_decimal, '150km', total_km_driven=estimated_km))
                     car.dynamic_price_unlimited = float(car.calculate_price(rental_hours_decimal, 'unlimited'))
 
-                    # ✅ Add calculated included km
-                    calculated_included_kms[car.id] = car.get_included_kms(rental_hours_decimal)
+                    # ✅ FIXED: Pass '150km' to get dynamic included kms
+                    calculated_included_kms[car.id] = car.get_included_kms(rental_hours_decimal, '150km')
 
         except ValueError:
             error = "Invalid date or time format."
@@ -110,10 +110,11 @@ def browse_cars(request):
         'end_time': end_time,
         'error': error,
         'calculated_prices': calculated_prices,
-        'calculated_included_kms': calculated_included_kms,  # ✅ NEW
+        'calculated_included_kms': calculated_included_kms,  # ✅ PASSED TO TEMPLATE
     }
 
     return render(request, 'browse_cars.html', context)
+
 
 def car_detail(request, pk):
     car = get_object_or_404(Car, pk=pk)
@@ -349,5 +350,6 @@ def get_dynamic_prices(request):
             continue
 
     return JsonResponse({'included_kms': included_kms})
+
 def contactus(request):
     return render(request, "contactus.html")
