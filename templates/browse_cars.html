@@ -702,7 +702,8 @@
         car_ids: carIds.join(','),
       });
 
-      fetch(`/get_dynamic_prices?${params}`)
+      fetch(`${window.location.origin}/get_dynamic_prices?${params}`)
+
         .then(res => res.json())
         .then(data => {
           if (!data.error && data.included_kms) {
