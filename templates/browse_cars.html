@@ -670,7 +670,8 @@
           car_id: carId
         });
 
-        fetch(`/get_dynamic_prices?${params}`)
+        fetch(`${window.location.origin}/get_dynamic_prices?${params}`)
+
           .then(res => res.json())
           .then(data => {
             if (!data.error) {
