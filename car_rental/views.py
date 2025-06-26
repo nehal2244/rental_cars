@@ -344,7 +344,8 @@ def get_dynamic_prices(request):
     for car_id in car_ids:
         try:
             car = Car.objects.get(id=car_id)
-            included_km = car.get_included_kms(rental_hours_decimal)
+            included_km = car.get_included_kms(rental_hours_decimal, '150km')
+
             included_kms[str(car_id)] = {"150km": included_km}
         except Car.DoesNotExist:
             continue
