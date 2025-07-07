@@ -45,6 +45,7 @@
     padding: 20px;
     background-color: #f5f5f5;
     border-bottom: 1px solid #ccc;
+    justify-content: center;
   }
 
   .filter-bar input,
@@ -572,7 +573,7 @@
 
             <div class="button-group">
               <a href="{% url 'car_detail' car.id %}" class="btn btn-view-details">View Details</a>
-              <a href="{% url 'car_book' car.id %}?start_date={{ start_date }}&start_time={{ start_time }}&end_date={{ end_date }}&end_time={{ end_time }}&kms=150km" class="btn btn-primary">
+              <a href="{% url 'car_book' car.id %}?start_date={{ start_date }}&start_time={{ start_time }}&end_date={{ end_date }}&end_time={{ end_time }}&kms=150km" class="btn btn-primary" style="background-color: green;">
                 Book Now
               </a>
             </div>

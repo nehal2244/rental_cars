@@ -3,11 +3,1398 @@
 {% block title %}{{ car.name }} - KVK Cars{% endblock %}
 
 {% block content %}
-<div class="container mt-4">
-    <h1>{{ car.name }}</h1>
-    <p><strong>Type:</strong> {{ car.car_type }}</p>
-    <p><strong>Seats:</strong> {{ car.seating_capacity }}</p>
-    <p><strong>Transmission:</strong> {{ car.transmission }}</p>
-    <!-- Add more details as needed -->
+<div class="car-detail-container">
+    <!-- Hero Section -->
+    <section class="hero-section">
+        <div class="hero-overlay"></div>
+        <div class="container">
+            <div class="row align-items-center">
+                <div class="col-lg-6">
+                    <div class="hero-content">
+                        <h1 class="car-name">{{ car.name }}</h1>
+                        <p class="car-tagline">Experience premium comfort and performance</p>
+                        
+                        <div class="hero-actions">
+                            <a href="{% url 'car_book' car.id %}?start_date={{ start_date }}&start_time={{ start_time }}&end_date={{ end_date }}&end_time={{ end_time }}&kms=150km" class="btn-book">
+                                Book Now <i class="fas fa-arrow-right"></i>
+                            </a>
+                            <button class="btn-call">
+                                <i class="fas fa-phone-alt me-2"></i> Call Us
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-lg-6 mt-4 mt-lg-0">
+                    <div class="car-image-container">
+                        {% if car.image_file %}
+                            <img src="{{ car.image_file.url }}" alt="{{ car.name }}" class="car-image" id="main-car-image">
+                        {% elif car.image_url %}
+                            <img src="{{ car.image_url }}" alt="{{ car.name }}" class="car-image" id="main-car-image">
+                        {% else %}
+                            <div class="no-image-placeholder">
+                                <i class="fas fa-car"></i>
+                                <p>No image available</p>
+                            </div>
+                        {% endif %}
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Specifications Section -->
+    <section class="specs-section">
+        <div class="container">
+            <h3 class="section-title">Specifications</h3>
+            <div class="specs-grid">
+                <!-- Existing spec cards -->
+                <div class="spec-card">
+                    <div class="spec-icon">
+                        <i class="fas fa-car"></i>
+                    </div>
+                    <div class="spec-details">
+                        <span>Car Type</span>
+                        <strong>{{ car.car_type }}</strong>
+                    </div>
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-icon">
+                        <i class="fas fa-chair"></i>
+                    </div>
+                    <div class="spec-details">
+                        <span>Seating Capacity</span>
+                        <strong>{{ car.seating_capacity }}</strong>
+                    </div>
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-icon">
+                        <i class="fas fa-cogs"></i>
+                    </div>
+                    <div class="spec-details">
+                        <span>Transmission</span>
+                        <strong>{{ car.get_transmission_display }}</strong>
+                    </div>
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-icon">
+                        <i class="fas fa-gas-pump"></i>
+                    </div>
+                    <div class="spec-details">
+                        <span>Fuel Type</span>
+                        <strong>{{ car.get_fuel_type_display }}</strong>
+                    </div>
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-icon">
+                        <i class="fas fa-rupee-sign"></i>
+                    </div>
+                    <div class="spec-details">
+                        <span>150KM Plan Price</span>
+                        <strong>₹{{ car.price_150km }}</strong>
+                    </div>
+                </div>
+
+
+                <div class="spec-card">
+                    <div class="spec-icon">
+                        <i class="fas fa-plus"></i>
+                    </div>
+                    <div class="spec-details">
+                        <span>Extra KM Charge</span>
+                        <strong>₹{{ car.extra_km_charge }}</strong>
+                    </div>
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-icon">
+                        <i class="fas fa-clock"></i>
+                    </div>
+                    <div class="spec-details">
+                        <span>Extra Hour Charge</span>
+                        <strong>₹{{ car.extra_hour_charge }}</strong>
+                    </div>
+                </div>
+
+                <div class="spec-card">
+                    <div class="spec-icon">
+                        <i class="fas fa-infinity"></i>
+                    </div>
+                    <div class="spec-details">
+                        <span>Unlimited KM Plan Price</span>
+                        <strong>₹{{ car.unlimited_km_price }}</strong>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <!-- Description & Features Section -->
+    <section class="details-section">
+        <div class="container">
+            <div class="row">
+                <div class="col-lg-8">
+                    <div class="car-description">
+                        <h3 class="section-title">Description</h3>
+                        <p>
+                            The {{ car.name }} combines elegance, comfort, and performance in one sophisticated package. 
+                            With its refined interior, advanced safety features, and responsive handling, this vehicle offers 
+                            an exceptional driving experience for both short commutes and long journeys.
+                        </p>
+                        
+                        <div class="tech-features">
+                            <h4>Technology Highlights</h4>
+                            <ul>
+                                <li><i class="fas fa-check-circle"></i> 10-inch Touchscreen Infotainment</li>
+                                <li><i class="fas fa-check-circle"></i> Wireless Apple CarPlay & Android Auto</li>
+                                <li><i class="fas fa-check-circle"></i> 360° Camera System</li>
+                                <li><i class="fas fa-check-circle"></i> Adaptive Cruise Control</li>
+                            </ul>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-lg-4">
+                    <div class="summary-card">
+                        <h5>Quick Summary</h5>
+                        
+                        <div class="summary-item">
+                            <span>Model Year</span>
+                            <strong>2023</strong>
+                        </div>
+                        
+                        <div class="summary-item">
+                            <span>Top Speed</span>
+                            <strong>220 km/h</strong>
+                        </div>
+                        
+                        <div class="safety-container">
+                            <h5>Safety Features</h5>
+                            <div class="safety-features">
+                                <span class="safety-badge">
+                                    <i class="fas fa-shield-alt"></i> ABS
+                                </span>
+                                <span class="safety-badge">
+                                    <i class="fas fa-car-crash"></i> Collision Warning
+                                </span>
+                                <span class="safety-badge">
+                                    <i class="fas fa-road"></i> Lane Assist
+                                </span>
+                                <span class="safety-badge">
+                                    <i class="fas fa-lightbulb"></i> Auto High Beam
+                                </span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Gallery Section -->
+    <section class="gallery-section">
+        <div class="container">
+            <div class="section-header">
+                <h3 class="section-title">Gallery</h3>
+                <a href="#" class="view-all">View All <i class="fas fa-arrow-right"></i></a>
+            </div>
+            
+            <div class="gallery-grid">
+                <div class="gallery-item main-image">
+                    <img src="https://images.unsplash.com/photo-1494976388531-d1058494cdd8" alt="Car exterior" class="gallery-img">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1503376780353-7e6692767b70" alt="Car interior" class="gallery-img">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1549399542-7e2f8ffbd1a0" alt="Dashboard" class="gallery-img">
+                </div>
+                <div class="gallery-item">
+                    <img src="https://images.unsplash.com/photo-1553440569-bcc63803a83d" alt="Engine" class="gallery-img">
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Pricing Section -->
+    <section class="pricing-section">
+        <div class="container">
+            <div class="text-center mb-5">
+                <h2 class="section-title">Rental Plans</h2>
+                <p class="section-subtitle">
+                    Choose the rental plan that best fits your needs. All plans include 24/7 roadside assistance and basic insurance coverage.
+                </p>
+            </div>
+            
+            <div class="row">
+                <div class="col-md-6 mb-4">
+                    <div class="pricing-card">
+                        <div class="pricing-header">
+                            <h3>150km Plan</h3>
+                        </div>
+                        <div class="pricing-body">
+                            <div class="price-value">
+                                <span>₹{{ car.price_150km }}</span>
+                                <small>/ day</small>
+                            </div>
+                            
+                            <ul class="price-features">
+                                <li>
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <span>Free Kilometers:</span> {{ car.free_kms }} km
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <span>Extra KM Charge:</span> ₹{{ car.extra_km_charge }} per km
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <span>Extra Hour Charge:</span> ₹{{ car.extra_hour_charge }} per hour after 12 hours
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <span>Extra KMs per Hour:</span> {{ car.extra_km_per_hour_150km }} km/hour after 12 hours
+                                    </div>
+                                </li>
+                            </ul>
+                            
+                            <button class="btn-select-plan">
+                                Select 150km Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-md-6 mb-4">
+                    <div class="pricing-card popular">
+                        <div class="popular-badge">MOST POPULAR</div>
+                        <div class="pricing-header">
+                            <h3>Unlimited Km Plan</h3>
+                        </div>
+                        <div class="pricing-body">
+                            <div class="price-value">
+                                <span>₹{{ car.unlimited_km_price }}</span>
+                                <small>/ day</small>
+                            </div>
+                            
+                            <ul class="price-features">
+                                <li>
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <span>Kilometers:</span> Unlimited
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <span>Extra KM Charge:</span> None
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <span>Extra Hour Charge:</span> ₹{{ car.extra_hour_charge_unlimited }} per hour after 12 hours
+                                    </div>
+                                </li>
+                                <li>
+                                    <i class="fas fa-check-circle"></i>
+                                    <div>
+                                        <span>Best For:</span> Long trips & highway driving
+                                    </div>
+                                </li>
+                            </ul>
+                            
+                            <button class="btn-select-plan popular-btn">
+                                <i class="fas fa-star me-2"></i> Select Unlimited Plan
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="pricing-extras">
+                <h5>Additional Services</h5>
+                <div class="extras-grid">
+                    <div class="extra-card">
+                        <i class="fas fa-baby-carriage"></i>
+                        <h6>Child Seat</h6>
+                        <p>₹200/day</p>
+                    </div>
+                    <div class="extra-card">
+                        <i class="fas fa-snowboarding"></i>
+                        <h6>Ski Rack</h6>
+                        <p>₹300/day</p>
+                    </div>
+                    <div class="extra-card">
+                        <i class="fas fa-sim-card"></i>
+                        <h6>WiFi Hotspot</h6>
+                        <p>₹150/day</p>
+                    </div>
+                    <div class="extra-card">
+                        <i class="fas fa-umbrella-beach"></i>
+                        <h6>Beach Kit</h6>
+                        <p>₹400/day</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Testimonials Section -->
+    <section class="testimonials-section">
+        <div class="container">
+            <h3 class="section-title text-center">Customer Reviews</h3>
+            
+            <div class="testimonials-grid">
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="user-info">
+                            <div class="avatar">R</div>
+                            <div>
+                                <h6>Rajesh Kumar</h6>
+                                <div class="stars">
+                                    {% for i in "12345" %}
+                                        <i class="fas fa-star active"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="date">2 days ago</div>
+                    </div>
+                    <p>"The {{ car.name }} was perfect for our family trip. Comfortable and fuel efficient. KVK Cars provided excellent service!"</p>
+                </div>
+                
+                <div class="testimonial-card">
+                    <div class="testimonial-header">
+                        <div class="user-info">
+                            <div class="avatar">P</div>
+                            <div>
+                                <h6>Priya Sharma</h6>
+                                <div class="stars">
+                                    {% for i in "12345" %}
+                                        <i class="fas fa-star active"></i>
+                                    {% endfor %}
+                                </div>
+                            </div>
+                        </div>
+                        <div class="date">1 week ago</div>
+                    </div>
+                    <p>"Loved the premium features in this car. The unlimited km plan saved us money on our road trip. Will rent again!"</p>
+                </div>
+            </div>
+            
+            <div class="text-center mt-4">
+                <button class="btn-view-reviews">
+                    View All Reviews <i class="fas fa-arrow-right"></i>
+                </button>
+            </div>
+        </div>
+    </section>
+    
+    <!-- FAQ Section -->
+    <section class="faq-section">
+        <div class="container">
+            <h3 class="section-title text-center">Frequently Asked Questions</h3>
+            
+            <div class="faq-grid">
+                <div class="faq-card">
+                    <h5 class="faq-question">What documents do I need to rent a car? <i class="fas fa-chevron-down"></i></h5>
+                    <div class="faq-answer">
+                        <p>You'll need a valid driver's license, proof of identity (Aadhaar/Passport), and a valid credit card in your name for the security deposit.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-card">
+                    <h5 class="faq-question">Can I extend my rental period? <i class="fas fa-chevron-down"></i></h5>
+                    <div class="faq-answer">
+                        <p>Yes, you can extend your rental by contacting us at least 24 hours before your scheduled return time. Additional charges will apply.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-card">
+                    <h5 class="faq-question">What is your cancellation policy? <i class="fas fa-chevron-down"></i></h5>
+                    <div class="faq-answer">
+                        <p>Free cancellation up to 24 hours before pickup. Late cancellations will incur a charge of 50% of the first day's rental fee.</p>
+                    </div>
+                </div>
+                
+                <div class="faq-card">
+                    <h5 class="faq-question">Are there age restrictions? <i class="fas fa-chevron-down"></i></h5>
+                    <div class="faq-answer">
+                        <p>Drivers must be between 21-70 years old. Drivers under 25 may incur a young driver surcharge of ₹300/day.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
 </div>
+
+<!-- Lightbox Modal -->
+<div class="lightbox-modal">
+    <span class="close-lightbox">&times;</span>
+    <img class="lightbox-content" id="lightbox-img">
+</div>
+
+<style>
+    :root {
+        --primary: #2563eb;
+        --primary-dark: #1d4ed8;
+        --secondary: #1e293b;
+        --accent: #f97316;
+        --light: #f8fafc;
+        --gray: #64748b;
+        --dark: #0f172a;
+        --border: #e2e8f0;
+        --success: #10b981;
+        --warning: #f59e0b;
+        --error: #ef4444;
+        --overlay: rgba(15, 23, 42, 0.85);
+    }
+    
+    .car-detail-container {
+        font-family: 'Inter', 'Segoe UI', system-ui, sans-serif;
+        color: #333;
+        line-height: 1.6;
+        overflow-x: hidden;
+    }
+    
+    /* Hero Section */
+    .hero-section {
+        background: linear-gradient(rgba(0, 0, 0, 0.7), rgba(0, 0, 0, 0.7)), url('https://images.unsplash.com/photo-1503376780353-7e6692767b70') center/cover no-repeat;
+        color: white;
+        padding: 80px 0 60px;
+        position: relative;
+    }
+    
+    .hero-overlay {
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: linear-gradient(135deg, var(--overlay) 0%, rgba(30, 41, 59, 0.95) 100%);
+    }
+    
+    .hero-content {
+        position: relative;
+        z-index: 2;
+    }
+    
+    .car-name {
+        font-size: 2.8rem;
+        font-weight: 800;
+        margin-bottom: 1rem;
+        line-height: 1.2;
+    }
+    
+    .car-tagline {
+        font-size: 1.3rem;
+        opacity: 0.9;
+        margin-bottom: 2rem;
+        max-width: 500px;
+    }
+    
+    .hero-actions {
+        display: flex;
+        gap: 1rem;
+        margin-top: 2rem;
+        flex-wrap: wrap;
+    }
+    
+    .btn-book {
+        background: var(--primary);
+        color: white;
+        border: none;
+        padding: 14px 28px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        font-size: 1.1rem;
+        text-decoration: none;
+    }
+    
+    .btn-book:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 12px rgba(37, 99, 235, 0.4);
+    }
+    
+    .btn-call {
+        background: transparent;
+        color: white;
+        border: 1px solid rgba(255, 255, 255, 0.3);
+        padding: 14px 24px;
+        border-radius: 8px;
+        font-weight: 500;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        font-size: 1.1rem;
+    }
+    
+    .btn-call:hover {
+        background: rgba(255, 255, 255, 0.1);
+        border-color: rgba(255, 255, 255, 0.5);
+    }
+    
+    .car-image-container {
+        position: relative;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.3);
+        height: 380px;
+        background: linear-gradient(45deg, #1e293b, #0f172a);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        z-index: 2;
+        transition: transform 0.3s ease;
+    }
+    
+    .car-image-container:hover {
+        transform: scale(1.02);
+    }
+    
+    .car-image {
+        max-width: 95%;
+        max-height: 95%;
+        object-fit: contain;
+        transition: transform 0.5s ease;
+    }
+    
+    .car-image-container:hover .car-image {
+        transform: scale(1.05);
+    }
+    
+    /* Specifications Section */
+    .specs-section {
+        padding: 80px 0;
+        background: var(--light);
+    }
+    
+    .section-title {
+        position: relative;
+        padding-bottom: 15px;
+        margin-bottom: 30px;
+        font-weight: 600;
+    }
+    
+    .section-title::after {
+        content: '';
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        width: 60px;
+        height: 4px;
+        background: var(--primary);
+        border-radius: 2px;
+    }
+    
+    .specs-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(280px, 1fr));
+        gap: 20px;
+    }
+    
+    .spec-card {
+        background: white;
+        border-radius: 10px;
+        padding: 20px;
+        display: flex;
+        align-items: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+    }
+    
+    .spec-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .spec-icon {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: rgba(37, 99, 235, 0.1);
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        margin-right: 15px;
+        color: var(--primary);
+        font-size: 1.2rem;
+    }
+    
+    .spec-details {
+        display: flex;
+        flex-direction: column;
+    }
+    
+    .spec-details span {
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+    
+    .spec-details strong {
+        font-size: 1.1rem;
+        font-weight: 600;
+    }
+    
+    /* Description Section */
+    .details-section {
+        padding: 80px 0;
+        background: white;
+    }
+    
+    .car-description {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+    }
+    
+    .car-description p {
+        margin-bottom: 1.5rem;
+        color: #4b5563;
+        line-height: 1.7;
+    }
+    
+    .tech-features {
+        background: rgba(37, 99, 235, 0.05);
+        border-radius: 10px;
+        padding: 25px;
+        margin-top: 25px;
+    }
+    
+    .tech-features h4 {
+        color: var(--primary);
+        margin-top: 0;
+        margin-bottom: 15px;
+        font-size: 1.25rem;
+    }
+    
+    .tech-features ul {
+        padding-left: 0;
+        list-style: none;
+    }
+    
+    .tech-features li {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: flex-start;
+        padding: 8px 0;
+    }
+    
+    .tech-features li i {
+        color: var(--success);
+        margin-right: 10px;
+        margin-top: 5px;
+        font-size: 1.1rem;
+    }
+    
+    /* Summary Card */
+    .summary-card {
+        background: white;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        height: 100%;
+    }
+    
+    .summary-card h5 {
+        font-weight: 600;
+        margin-bottom: 20px;
+        padding-bottom: 15px;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .summary-item {
+        display: flex;
+        justify-content: space-between;
+        padding: 12px 0;
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .summary-item:last-child {
+        border-bottom: none;
+    }
+    
+    .summary-item span {
+        color: var(--gray);
+    }
+    
+    .summary-item strong {
+        font-weight: 600;
+    }
+    
+    .safety-container {
+        margin-top: 30px;
+    }
+    
+    .safety-container h5 {
+        font-weight: 600;
+        margin-bottom: 15px;
+    }
+    
+    .safety-features {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 12px;
+    }
+    
+    .safety-badge {
+        background: rgba(239, 68, 68, 0.1);
+        color: var(--error);
+        padding: 10px 15px;
+        border-radius: 8px;
+        font-size: 0.9rem;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    /* Gallery Section */
+    .gallery-section {
+        padding: 80px 0;
+        background: var(--light);
+    }
+    
+    .section-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 30px;
+    }
+    
+    .view-all {
+        color: var(--primary);
+        font-weight: 600;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        gap: 5px;
+        transition: all 0.3s ease;
+    }
+    
+    .view-all:hover {
+        gap: 8px;
+        text-decoration: underline;
+    }
+    
+    .gallery-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+    
+    .gallery-item {
+        border-radius: 12px;
+        overflow: hidden;
+        height: 220px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        cursor: pointer;
+    }
+    
+    .gallery-item.main-image {
+        grid-column: span 2;
+        grid-row: span 2;
+        height: 460px;
+    }
+    
+    .gallery-item img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover;
+        transition: transform 0.5s ease;
+    }
+    
+    .gallery-item:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .gallery-item:hover img {
+        transform: scale(1.05);
+    }
+    
+    /* Pricing Section */
+    .pricing-section {
+        padding: 80px 0;
+        background: white;
+    }
+    
+    .section-subtitle {
+        color: var(--gray);
+        max-width: 600px;
+        margin: 0 auto;
+    }
+    
+    .pricing-card {
+        background: white;
+        border-radius: 12px;
+        overflow: hidden;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        height: 100%;
+        position: relative;
+        border: 1px solid var(--border);
+    }
+    
+    .pricing-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+    }
+    
+    .pricing-card.popular {
+        border: 1px solid var(--primary);
+    }
+    
+    .popular-badge {
+        position: absolute;
+        top: 15px;
+        right: -10px;
+        background: var(--accent);
+        color: white;
+        padding: 6px 20px;
+        border-radius: 20px;
+        font-size: 0.85rem;
+        font-weight: 600;
+        box-shadow: 0 4px 6px rgba(249, 115, 22, 0.3);
+        z-index: 10;
+    }
+    
+    .pricing-header {
+        background: linear-gradient(135deg, var(--primary) 0%, var(--primary-dark) 100%);
+        padding: 20px;
+        text-align: center;
+        color: white;
+    }
+    
+    .pricing-header h3 {
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    .pricing-body {
+        padding: 30px;
+    }
+    
+    .price-value {
+        text-align: center;
+        margin-bottom: 25px;
+    }
+    
+    .price-value span {
+        font-size: 2.5rem;
+        font-weight: 700;
+        color: var(--dark);
+    }
+    
+    .price-value small {
+        color: var(--gray);
+        font-size: 1rem;
+    }
+    
+    .price-features {
+        list-style: none;
+        padding: 0;
+        margin-bottom: 30px;
+    }
+    
+    .price-features li {
+        padding: 10px 0;
+        display: flex;
+        align-items: flex-start;
+    }
+    
+    .price-features li:not(:last-child) {
+        border-bottom: 1px solid var(--border);
+    }
+    
+    .price-features li i {
+        color: var(--success);
+        margin-right: 10px;
+        margin-top: 4px;
+        font-size: 1.2rem;
+    }
+    
+    .price-features li div span {
+        font-weight: 500;
+        color: var(--dark);
+    }
+    
+    .btn-select-plan {
+        width: 100%;
+        padding: 14px;
+        background: var(--primary);
+        color: white;
+        border: none;
+        border-radius: 8px;
+        font-weight: 600;
+        font-size: 1rem;
+        cursor: pointer;
+        transition: all 0.3s ease;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+    }
+    
+    .btn-select-plan:hover {
+        background: var(--primary-dark);
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+    }
+    
+    .popular .pricing-header {
+        background: linear-gradient(135deg, var(--accent) 0%, #ea580c 100%);
+    }
+    
+    .popular-btn {
+        background: var(--accent);
+    }
+    
+    .popular-btn:hover {
+        background: #ea580c;
+    }
+    
+    .pricing-extras {
+        margin-top: 50px;
+    }
+    
+    .pricing-extras h5 {
+        font-weight: 600;
+        margin-bottom: 25px;
+        text-align: center;
+    }
+    
+    .extras-grid {
+        display: grid;
+        grid-template-columns: repeat(4, 1fr);
+        gap: 20px;
+    }
+    
+    .extra-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px 20px;
+        text-align: center;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        border: 1px solid var(--border);
+    }
+    
+    .extra-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+        border-color: var(--primary);
+    }
+    
+    .extra-card i {
+        font-size: 2.5rem;
+        color: var(--primary);
+        margin-bottom: 15px;
+    }
+    
+    .extra-card h6 {
+        margin: 0 0 10px;
+        font-size: 1.1rem;
+    }
+    
+    .extra-card p {
+        color: var(--gray);
+        margin: 0;
+        font-weight: 600;
+    }
+    
+    /* Testimonials Section */
+    .testimonials-section {
+        padding: 80px 0;
+        background: white;
+    }
+    
+    .testimonials-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        margin-top: 40px;
+    }
+    
+    .testimonial-card {
+        background: white;
+        border-radius: 12px;
+        padding: 30px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+        border: 1px solid var(--border);
+    }
+    
+    .testimonial-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: flex-start;
+        margin-bottom: 20px;
+    }
+    
+    .user-info {
+        display: flex;
+        align-items: center;
+        gap: 15px;
+    }
+    
+    .avatar {
+        width: 50px;
+        height: 50px;
+        border-radius: 50%;
+        background: var(--primary);
+        color: white;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        font-weight: bold;
+        font-size: 1.2rem;
+    }
+    
+    .user-info h6 {
+        margin: 0;
+        font-size: 1.1rem;
+    }
+    
+    .stars {
+        display: flex;
+        gap: 3px;
+        margin-top: 5px;
+    }
+    
+    .stars i {
+        color: #fbbf24;
+        font-size: 0.9rem;
+    }
+    
+    .date {
+        color: var(--gray);
+        font-size: 0.9rem;
+    }
+    
+    .testimonial-card p {
+        font-style: italic;
+        color: #4b5563;
+        line-height: 1.7;
+        margin: 0;
+    }
+    
+    .btn-view-reviews {
+        background: transparent;
+        color: var(--primary);
+        border: 1px solid var(--primary);
+        padding: 12px 25px;
+        border-radius: 8px;
+        font-weight: 600;
+        transition: all 0.3s ease;
+        cursor: pointer;
+        display: inline-flex;
+        align-items: center;
+        gap: 8px;
+    }
+    
+    .btn-view-reviews:hover {
+        background: var(--primary);
+        color: white;
+        transform: translateY(-2px);
+        box-shadow: 0 4px 6px rgba(37, 99, 235, 0.3);
+    }
+    
+    /* FAQ Section */
+    .faq-section {
+        padding: 80px 0;
+        background: var(--light);
+    }
+    
+    .faq-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr);
+        gap: 30px;
+        margin-top: 40px;
+    }
+    
+    .faq-card {
+        background: white;
+        border-radius: 12px;
+        padding: 25px;
+        box-shadow: 0 4px 6px rgba(0, 0, 0, 0.05);
+        transition: all 0.3s ease;
+        border-left: 4px solid var(--primary);
+    }
+    
+    .faq-card:hover {
+        transform: translateY(-3px);
+    }
+    
+    .faq-question {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        cursor: pointer;
+        margin: 0;
+        padding: 0 0 15px 0;
+        color: var(--dark);
+        font-size: 1.15rem;
+    }
+    
+    .faq-question i {
+        transition: transform 0.3s ease;
+    }
+    
+    .faq-answer {
+        max-height: 0;
+        overflow: hidden;
+        transition: max-height 0.3s ease, padding 0.3s ease;
+    }
+    
+    .faq-card.active .faq-answer {
+        max-height: 200px;
+        padding-top: 15px;
+    }
+    
+    .faq-card.active .faq-question i {
+        transform: rotate(180deg);
+    }
+    
+    .faq-card p {
+        color: var(--gray);
+        margin: 0;
+    }
+    
+    /* Lightbox */
+    .lightbox-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        background-color: rgba(0, 0, 0, 0.9);
+        padding: 20px;
+        box-sizing: border-box;
+    }
+    
+    .lightbox-content {
+        display: block;
+        margin: 0 auto;
+        max-width: 90%;
+        max-height: 80vh;
+        margin-top: 5vh;
+    }
+    
+    .close-lightbox {
+        position: absolute;
+        top: 20px;
+        right: 30px;
+        color: white;
+        font-size: 40px;
+        font-weight: bold;
+        cursor: pointer;
+        transition: color 0.3s;
+    }
+    
+    .close-lightbox:hover {
+        color: #ccc;
+    }
+    
+    /* Responsive adjustments */
+    @media (max-width: 1200px) {
+        .gallery-grid {
+            grid-template-columns: repeat(3, 1fr);
+        }
+        
+        .gallery-item.main-image {
+            grid-column: span 3;
+            height: 350px;
+        }
+        
+        .faq-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+    
+    @media (max-width: 992px) {
+        .hero-section {
+            padding: 60px 0 40px;
+        }
+        
+        .car-name {
+            font-size: 2.5rem;
+        }
+        
+        .gallery-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+        
+        .gallery-item.main-image {
+            grid-column: span 2;
+        }
+        
+        .testimonials-grid,
+        .extras-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .specs-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 768px) {
+        .hero-actions {
+            flex-direction: column;
+        }
+        
+        .btn-book,
+        .btn-call {
+            width: 100%;
+            justify-content: center;
+        }
+        
+        .car-image-container {
+            height: 320px;
+        }
+        
+        .gallery-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .gallery-item.main-image {
+            grid-column: span 1;
+            height: 300px;
+        }
+        
+        .specs-grid {
+            grid-template-columns: 1fr;
+        }
+        
+        .extras-grid {
+            grid-template-columns: repeat(2, 1fr);
+        }
+    }
+    
+    @media (max-width: 576px) {
+        .car-name {
+            font-size: 2.2rem;
+        }
+        
+        .car-image-container {
+            height: 250px;
+        }
+        
+        .extras-grid {
+            grid-template-columns: 1fr;
+        }
+    }
+</style>
+
+<script>
+    document.addEventListener('DOMContentLoaded', function() {
+        // Smooth scrolling for anchor links
+        document.querySelectorAll('a[href^="#"]').forEach(anchor => {
+            anchor.addEventListener('click', function(e) {
+                e.preventDefault();
+                const target = document.querySelector(this.getAttribute('href'));
+                if (target) {
+                    window.scrollTo({
+                        top: target.offsetTop - 80,
+                        behavior: 'smooth'
+                    });
+                }
+            });
+        });
+        
+        // Gallery lightbox
+        const galleryItems = document.querySelectorAll('.gallery-img');
+        const lightbox = document.querySelector('.lightbox-modal');
+        const lightboxImg = document.getElementById('lightbox-img');
+        const closeLightbox = document.querySelector('.close-lightbox');
+        
+        galleryItems.forEach(item => {
+            item.addEventListener('click', function() {
+                lightboxImg.src = this.src;
+                lightbox.style.display = 'block';
+                document.body.style.overflow = 'hidden';
+            });
+        });
+        
+        closeLightbox.addEventListener('click', function() {
+            lightbox.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        });
+        
+        window.addEventListener('click', function(e) {
+            if (e.target === lightbox) {
+                lightbox.style.display = 'none';
+                document.body.style.overflow = 'auto';
+            }
+        });
+        
+        // FAQ accordion
+        const faqQuestions = document.querySelectorAll('.faq-question');
+        
+        faqQuestions.forEach(question => {
+            question.addEventListener('click', function() {
+                const faqCard = this.parentElement;
+                faqCard.classList.toggle('active');
+            });
+        });
+        
+        // Staggered animations for spec cards
+        const specCards = document.querySelectorAll('.spec-card');
+        specCards.forEach((card, index) => {
+            setTimeout(() => {
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(20px)';
+                card.style.transition = 'opacity 0.5s ease, transform 0.5s ease';
+                
+                setTimeout(() => {
+                    card.style.opacity = '1';
+                    card.style.transform = 'translateY(0)';
+                }, 100);
+            }, index * 100);
+        });
+        
+        // Parallax effect for hero section
+        window.addEventListener('scroll', function() {
+            const scrollPosition = window.pageYOffset;
+            const heroSection = document.querySelector('.hero-section');
+            if (heroSection) {
+                heroSection.style.backgroundPositionY = scrollPosition * 0.5 + 'px';
+            }
+        });
+        
+        // Hover effect for car image
+        const carImage = document.getElementById('main-car-image');
+        if (carImage) {
+            carImage.addEventListener('mouseenter', function() {
+                this.style.transform = 'scale(1.05)';
+            });
+            
+            carImage.addEventListener('mouseleave', function() {
+                this.style.transform = 'scale(1)';
+            });
+        }
+    });
+</script>
+
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
 {% endblock %}

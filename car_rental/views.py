@@ -139,6 +139,7 @@ def payment_success(request):
 def about(request):
     return render(request, "about.html")
 
+from decimal import Decimal
 
 def car_book(request, pk):
     car = get_object_or_404(Car, pk=pk)
@@ -151,28 +152,29 @@ def car_book(request, pk):
 
     hours_float = 0.0
     estimated_km = 0.0
+    included_kms = 0
+
     try:
         start_datetime = make_aware(datetime.strptime(f"{start_date} {start_time}", "%Y-%m-%d %I:%M %p"))
         end_datetime = make_aware(datetime.strptime(f"{end_date} {end_time}", "%Y-%m-%d %I:%M %p"))
         hours_float = round((end_datetime - start_datetime).total_seconds() / 3600, 2)
-        estimated_km = hours_float * 15  # 15 km/hour
+        estimated_km = hours_float * 15
+        included_kms = car.get_included_kms(Decimal(str(hours_float)), kms)
     except Exception:
         start_datetime = None
         end_datetime = None
 
     try:
-        price = float(car.calculate_price(hours_float, kms, total_km_driven=estimated_km))
+        price = float(car.calculate_price(Decimal(str(hours_float)), kms, total_km_driven=Decimal(str(estimated_km))))
     except Exception:
         price = 0.0
 
-    price_150 = 0.0
-    price_unlimited = 0.0
-
     try:
-        price_150 = round(car.calculate_price(hours_float, '150km', total_km_driven=estimated_km), 2)
-        price_unlimited = round(car.calculate_price(hours_float, 'unlimited'), 2)
+        price_150 = round(car.calculate_price(Decimal(str(hours_float)), '150km', total_km_driven=Decimal(str(estimated_km))), 2)
+        price_unlimited = round(car.calculate_price(Decimal(str(hours_float)), 'unlimited'), 2)
     except Exception:
-        pass
+        price_150 = 0.0
+        price_unlimited = 0.0
 
     initial_data = {}
     if start_datetime:
@@ -184,13 +186,17 @@ def car_book(request, pk):
         form = BookingForm(request.POST)
         if form.is_valid():
             data = form.cleaned_data
-            hours_float_post = round((data['end_datetime'] - data['start_datetime']).total_seconds() / 3600, 2)
             kms_post = request.POST.get('kms') or kms
-            estimated_km_post = hours_float_post * 15  # Same logic during POST
+            hours_float_post = round((data['end_datetime'] - data['start_datetime']).total_seconds() / 3600, 2)
+            estimated_km_post = hours_float_post * 15
+
+            # ✅ Included kms for email message
+            included_kms_post = car.get_included_kms(Decimal(str(hours_float_post)), kms_post)
 
             try:
-                price_post = float(car.calculate_price(hours_float_post, kms_post, total_km_driven=estimated_km_post))
-            except Exception:
+                price_post = float(car.calculate_price(Decimal(str(hours_float_post)), kms_post, total_km_driven=Decimal(str(estimated_km_post))))
+            except Exception as e:
+                print(f"❌ Error calculating price: {e}")
                 price_post = 0.0
 
             if data['end_datetime'] <= data['start_datetime']:
@@ -208,13 +214,13 @@ def car_book(request, pk):
                 request.session[f'booking_info_{booking.id}'] = {
                     'full_name': data['full_name'],
                     'phone': data['phone'],
-                    'email': data['email']
+                    'email': data['email'],
+                    'kms_plan': kms_post,
                 }
 
-                approval_link = request.build_absolute_uri(
-                    reverse('approve_booking', args=[str(booking.approval_token)])
-                )
+                approval_link = request.build_absolute_uri(reverse('approve_booking', args=[str(booking.approval_token)]))
 
+                # ✅ Updated message with included kms
                 message = (
                     f"🚗 Booking Request: {car.name}\n\n"
                     f"Full Name: {data['full_name']}\n"
@@ -222,7 +228,7 @@ def car_book(request, pk):
                     f"Phone: {data['phone']}\n\n"
                     f"Pickup Date & Time: {data['start_datetime'].strftime('%d-%m-%Y %H:%M')}\n"
                     f"Drop-off Date & Time: {data['end_datetime'].strftime('%d-%m-%Y %H:%M')}\n"
-                    f"Kilometers Plan: {kms_post}\n"
+                    f"Kilometers Plan: {kms_post} ({included_kms_post} km)\n"
                     f"Rental Hours: {hours_float_post} hours\n"
                     f"Estimated Price: ₹{price_post:.2f}\n\n"
                     f"✅ Approve here: {approval_link}"
@@ -251,10 +257,10 @@ def car_book(request, pk):
         'price': price,
         'price_150': price_150,
         'price_unlimited': price_unlimited,
+        'included_kms': included_kms,
     }
 
     return render(request, 'car_book.html', context)
-
 
 
 def booking_pending(request):
@@ -296,7 +302,8 @@ def approve_booking(request, token):
             fail_silently=False,
         )
 
-    return render(request, 'booking_approved.html', {'booking': booking})
+    # ✅ Instead of rendering a separate approved page, redirect to the success page
+    return redirect('booking_success', booking_id=booking.id)
 
 
 def booking_success(request, booking_id):
@@ -306,7 +313,6 @@ def booking_success(request, booking_id):
         return render(request, 'booking_pending.html', {'car': booking.car})
 
     return render(request, 'booking_success.html', {'booking': booking})
-
 
 
 
@@ -320,37 +326,54 @@ def get_dynamic_prices(request):
             except ValueError:
                 return None
 
+    # ✅ Get the parameters from the URL
     start_date = request.GET.get('start_date')
     start_time = request.GET.get('start_time')
     end_date = request.GET.get('end_date')
     end_time = request.GET.get('end_time')
-    car_ids_raw = request.GET.get('car_ids')  # expects comma-separated IDs like "1,2,3"
+    car_id = request.GET.get('car_id')
 
-    if not all([start_date, start_time, end_date, end_time, car_ids_raw]):
+    # ✅ Check if all fields are given
+    if not all([start_date, start_time, end_date, end_time, car_id]):
         return JsonResponse({'error': 'Missing data'}, status=400)
 
+    # ✅ Convert date & time to datetime objects
     start_datetime = parse_datetime_flexible(start_date, start_time)
     end_datetime = parse_datetime_flexible(end_date, end_time)
 
     if not start_datetime or not end_datetime:
         return JsonResponse({'error': 'Invalid date/time format'}, status=400)
 
+    # ✅ Calculate rental hours and estimated km
     rental_hours = (end_datetime - start_datetime).total_seconds() / 3600
     rental_hours_decimal = Decimal(str(rental_hours))
+    estimated_km = rental_hours_decimal * Decimal(15)
 
-    car_ids = car_ids_raw.split(',')
-    included_kms = {}
+    try:
+        # ✅ Get the Car from the database
+        car = Car.objects.get(id=car_id)
 
-    for car_id in car_ids:
-        try:
-            car = Car.objects.get(id=car_id)
-            included_km = car.get_included_kms(rental_hours_decimal, '150km')
+        # ✅ Calculate dynamic prices and kms
+        prices = {
+            '150km': round(float(car.calculate_price(rental_hours_decimal, '150km', total_km_driven=estimated_km)), 2),
+            'unlimited': round(float(car.calculate_price(rental_hours_decimal, 'unlimited')), 2),
+        }
 
-            included_kms[str(car_id)] = {"150km": included_km}
-        except Car.DoesNotExist:
-            continue
+        included_kms = {
+            '150km': car.get_included_kms(rental_hours_decimal, '150km'),
+            'unlimited': 'Unlimited',
+        }
 
-    return JsonResponse({'included_kms': included_kms})
+        # ✅ Send back the results as JSON
+        return JsonResponse({
+            'prices': prices,
+            'included_kms': included_kms,
+            'rental_hours': round(rental_hours, 2),
+        })
+
+    except Car.DoesNotExist:
+        return JsonResponse({'error': 'Car not found'}, status=404)
+
 
 def contactus(request):
     return render(request, "contactus.html")

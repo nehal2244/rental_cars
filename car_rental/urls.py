@@ -27,6 +27,8 @@ urlpatterns = [
 
 
     path('contactus/', views.contactus, name='contactus'),
+    
+
 ]
 
 if settings.DEBUG:

@@ -1,6 +1,11 @@
 from django.contrib import admin  
 from car_rental.models import Car, Booking
 
+admin.site.site_header = "KVK Dashboard"
+admin.site.site_title = "KVK Dashboard Portal"
+admin.site.index_title = "Welcome to KVK Dashboard Admin"
+
+
 @admin.register(Car)
 class CarAdmin(admin.ModelAdmin):
     list_display = [

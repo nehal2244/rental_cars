@@ -39,20 +39,23 @@
       {{ form.end_datetime.errors }}
     </div>
 
-    <div class="form-group">
-      <label for="kmsSelect">Kilometers Plan:</label>
-      <select name="kms" id="kmsSelect" class="form-control" required>
-        <option value="150km" {% if kms == '150km' %}selected{% endif %}>150 km</option>
-        <option value="unlimited" {% if kms == 'unlimited' %}selected{% endif %}>Unlimited</option>
-      </select>
-    </div>
+<div class="form-group">
+  <label for="kmsSelect">Kilometers Plan:</label>
+  <select name="kms" id="kmsSelect" class="form-control" required>
+    <option value="150km" {% if kms == '150km' %}selected{% endif %}>Included Kilometers ({{ included_kms }} km)</option>
+    <option value="unlimited" {% if kms == 'unlimited' %}selected{% endif %}>Unlimited kilometers</option>
+  </select>
+</div>
+
 
     <input type="hidden" name="kms_hidden" id="kmsHidden" value="{{ kms }}">
 
-    <div class="form-summary" style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 6px;">
-      <p><strong>Rental Hours:</strong> <span id="rentalHoursDisplay">{{ hours }}</span> hours</p>
-      <p><strong>Estimated Price:</strong> <strong id="priceDisplay">₹{{ price|floatformat:2 }}</strong></p>
-    </div>
+<div class="form-summary" style="margin-top: 20px; padding: 15px; background-color: #f9f9f9; border-radius: 6px;">
+  <p><strong>Rental Hours:</strong> <span id="rentalHoursDisplay">{{ hours }}</span> hours</p>
+  <p><strong>Included Kilometers:</strong> <span id="includedKmsDisplay">{{ included_kms }}</span> km</p>
+  <p><strong>Estimated Price:</strong> <strong id="priceDisplay">₹{{ price|floatformat:2 }}</strong></p>
+</div>
+
 
     <button type="submit" class="btn btn-success" style="margin-top: 20px; padding: 10px 20px; border-radius: 5px;">
       Confirm Booking
@@ -68,6 +71,7 @@
     const kmsHidden = document.getElementById("kmsHidden");
     const priceDisplay = document.getElementById("priceDisplay");
     const rentalHoursDisplay = document.getElementById("rentalHoursDisplay");
+    const includedKmsDisplay = document.getElementById("includedKmsDisplay");
 
     const startInput = document.getElementById("{{ form.start_datetime.auto_id }}");
     const endInput = document.getElementById("{{ form.end_datetime.auto_id }}");
@@ -96,31 +100,49 @@
       fetch(url)
         .then(res => res.json())
         .then(data => {
+          // ✅ Update Price
           if (data.prices && data.prices[kms]) {
             priceDisplay.textContent = "₹" + parseFloat(data.prices[kms]).toFixed(2);
-          } else if (data.prices) {
-            priceDisplay.textContent = "₹" + Object.values(data.prices)[0].toFixed(2);
           } else {
             priceDisplay.textContent = "₹0.00";
           }
 
+          // ✅ Update Rental Hours
           const start = new Date(`${startDate} ${startTime}`);
           const end = new Date(`${endDate} ${endTime}`);
           const hours = (end - start) / (1000 * 60 * 60);
           rentalHoursDisplay.textContent = hours.toFixed(2);
+
+          // ✅ Get included kms for 150km plan
+          const includedKmsValue = data.included_kms ? data.included_kms["150km"] : 0;
+
+          // ✅ Update the first dropdown option dynamically
+          document.querySelector('#kmsSelect option[value="150km"]').textContent = `Included Kilometers (${includedKmsValue} km)`;
+
+          // ✅ Unlimited stays static
+          document.querySelector('#kmsSelect option[value="unlimited"]').textContent = `Unlimited kilometers`;
+
+          // ✅ Update summary section
+          if (data.included_kms && data.included_kms[kms]) {
+            includedKmsDisplay.textContent = data.included_kms[kms];
+          } else {
+            includedKmsDisplay.textContent = "0";
+          }
         })
         .catch(err => {
           console.error("Failed to fetch dynamic price:", err);
           priceDisplay.textContent = "₹0.00";
           rentalHoursDisplay.textContent = "0.00";
+          includedKmsDisplay.textContent = "0";
         });
     }
 
+    // 🔄 Trigger update on any change
     kmsSelect.addEventListener('change', updatePrice);
     startInput.addEventListener('change', updatePrice);
     endInput.addEventListener('change', updatePrice);
 
-    updatePrice();
+    updatePrice();  // ✅ Initial load
   });
 </script>
 
